@@ -2,6 +2,7 @@
 
 **Készítette:** Szénás Szabolcs  
 **Konfigurálás dátuma:** 2026. augusztus 30.  
+**Dokumentáció frissítve:** 2026. szeptember 1.  
 **Projekt:** RapidRoute Logistics Network
 
 ## 1. A szerver célja
@@ -40,6 +41,8 @@ A szervert a szerepkörök telepítése után új erdő első tartományvezérl�
 - PTR-rekord: `192.168.186.10` → `RR-DC01.rapidroute.local`;
 - a név szerinti, cím szerinti és külső névfeloldás is sikeresen lefutott.
 
+Az RR-FS01 kiszolgáló a `192.168.186.20` statikus címet és az RR-DC01 `192.168.186.10` DNS-címét használja. Az RR-FS01 az RR-DC01-et, a tartományt és a belső DNS-neveket sikeresen eléri.
+
 ## 5. Active Directory-struktúra
 
 A tartományban létrejött a `RapidRoute` szervezeti egység, benne:
@@ -48,6 +51,8 @@ A tartományban létrejött a `RapidRoute` szervezeti egység, benne:
 - `Groups`;
 - `Computers`;
 - `Servers`.
+
+Az RR-FS01 számítógépobjektuma a `RapidRoute/Servers` OU-ban található. Tartománytagsága és biztonságos tartományi csatornája ellenőrzött.
 
 ### Biztonsági csoportok
 
@@ -63,9 +68,11 @@ A tartományban létrejött a `RapidRoute` szervezeti egység, benne:
 | Teszt Logisztika | `teszt.logisztika` | `GG_Debrecen_Logisztika_Users` |
 | Teszt Depo | `teszt.depo` | `GG_Debrecen_Depo_Users` |
 
-A csoporttagságokat PowerShell-parancsokkal is ellenőriztük.
+A csoporttagságokat PowerShell-parancsokkal is ellenőriztük. Ezek a csoportok határozzák meg az RR-FS01 részlegi SMB-megosztásainak hozzáféréseit.
 
 ## 6. Group Policy
+
+### Kliens-alapházirend
 
 Létrejött a `GPO_RapidRoute_Client_Baseline` házirend, amely a `RapidRoute/Computers` OU-hoz kapcsolódik.
 
@@ -75,7 +82,20 @@ Beállításai:
 - bejelentkezési üzenet szövege: `Authorized RapidRoute users only.`;
 - gépinaktivitási korlát: `900` másodperc.
 
-A szoftvertelepítési GPO csak az RR-FS01 telepítőmegosztásának elkészülte után véglegesíthető és az RR-CLIENT01 gépen tesztelhető.
+### 7-Zip szoftverterítési házirend
+
+Az RR-FS01 telepítőmegosztásának elkészülte után létrejött és véglegesítésre került a `GPO_RapidRoute_7Zip_Deployment` házirend. Ez szintén a `RapidRoute/Computers` OU-hoz kapcsolódik.
+
+| Beállítás | Érték |
+|---|---|
+| Csomag | 7-Zip 26.02 x64 MSI |
+| Hálózati forrás | `\\RR-FS01\Software$\7-Zip-x64.msi` |
+| Telepítés típusa | Assigned, Computer Configuration |
+| Hatókörből kikerülés | Az alkalmazás eltávolítása engedélyezve |
+| Nyelvi beállítás | A csomag nyelvének figyelmen kívül hagyása engedélyezve |
+| Indítási feldolgozás | Always wait for the network at computer startup and logon: Enabled |
+
+Az RR-DC01-ről az RR-FS01 név szerint elérhető, és a telepítő UNC-útvonalára futtatott `Test-Path` eredménye `True`. A GPO kliensoldali telepítési próbája az RR-CLIENT01 elkészülte után történik.
 
 ## 7. Elvégzett ellenőrzések
 
@@ -88,12 +108,20 @@ ping 192.168.186.2
 
 Get-ADDomain | Select-Object DNSRoot,NetBIOSName,DomainMode
 Get-ADForest | Select-Object RootDomain,ForestMode
+Get-ADComputer RR-FS01 -Properties Enabled,DistinguishedName
 Get-Service NTDS,DNS | Select-Object Name,Status
 whoami
 
 nslookup RR-DC01.rapidroute.local 192.168.186.10
 nslookup 192.168.186.10 192.168.186.10
 nslookup microsoft.com 192.168.186.10
+
+Test-Connection RR-FS01 -Count 4
+Test-Path '\\RR-FS01\Software$\7-Zip-x64.msi'
+
+Get-GPO -Name "GPO_RapidRoute_Client_Baseline"
+Get-GPO -Name "GPO_RapidRoute_7Zip_Deployment"
+Get-GPInheritance -Target "OU=Computers,OU=RapidRoute,DC=rapidroute,DC=local"
 
 dcdiag
 Get-Service ADWS,DNS,DFSR,KDC,Netlogon,NTDS |
@@ -107,18 +135,31 @@ Eredmények:
 - az AD DS- és DNS-szolgáltatások futnak;
 - a DNS előre- és visszakeresése működik;
 - külső névfeloldás működik;
+- az RR-FS01 számítógépobjektuma a Servers OU-ban található;
+- az RR-FS01 hálózaton elérhető;
+- a 7-Zip MSI UNC-útvonala az RR-DC01-ről elérhető;
+- mindkét RapidRoute GPO létezik és a Computers OU-hoz kapcsolódik;
 - a `dcdiag` Connectivity, Advertising, SysVolCheck és Services tesztje sikeres;
 - az ADWS, DNS, DFSR, KDC, Netlogon és NTDS szolgáltatások futnak.
 
 ## 8. Jelenlegi készültség és függőségek
 
-Az RR-DC01 alapvető tartományvezérlő-, DNS- és kliens-alapházirend funkciói elkészültek. A végső rendszerpróba a következő gépek elkészülte után történik:
+Az RR-DC01 tartományvezérlő-, DNS-, Active Directory- és Group Policy-funkciói elkészültek. Az RR-FS01 szerveroldali konfigurációja szintén elkészült, beleértve:
 
-1. **RR-FS01:** tartományba léptetés, fájl- és nyomtatómegosztás, mentés és telepítőcsomagok;
-2. **RR-WEB01:** DNS-rekord, HTTP- és HTTPS-elérés;
-3. **RR-CLIENT01:** tartományi bejelentkezés, GPO, megosztások, programtelepítés és weboldal tesztelése.
+- a tartománytagságot;
+- a részlegi fájlmegosztásokat és jogosultságokat;
+- a rejtett szoftvermegosztást;
+- a megosztott tesztnyomtatót;
+- a napi biztonsági mentést és sikeres fájlvisszaállítást;
+- a 7-Zip telepítőcsomagot és annak terítési GPO-ját.
+
+A teljes rendszer végponttól végpontig történő lezárásához még a következő feladatok szükségesek:
+
+1. **RR-WEB01:** DNS-rekord, HTTP- és HTTPS-elérés kialakítása és tesztelése;
+2. **RR-CLIENT01:** tartományi bejelentkezés, kliens-alapházirend, részlegi megosztások, nyomtatókapcsolat, automatikus 7-Zip-telepítés és weboldal-elérés ellenőrzése.
 
 ## 9. Bizonyítékok
 
-A képernyőképek részletes tartalomjegyzéke a [`KEPEK.md`](KEPEK.md) fájlban található.
+Az RR-DC01 eredeti telepítési és ellenőrzési képeinek tartalomjegyzéke a [`KEPEK.md`](KEPEK.md) fájlban található.
 
+Az RR-FS01 tartományba léptetését, az RR-DC01-ről végzett MSI-elérési tesztet, valamint a 7-Zip Group Policy teljes beállítását az [`RR-FS01 képkatalógusa`](../RR-FS01/KEPEK.md) dokumentálja. Az RR-FS01 részletes műszaki leírása az [`RR-FS01_dokumentacio.md`](../RR-FS01/RR-FS01_dokumentacio.md) fájlban található.
