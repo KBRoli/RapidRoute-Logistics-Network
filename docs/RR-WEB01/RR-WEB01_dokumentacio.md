@@ -124,7 +124,7 @@ Az Apache SSL-modulja és a `rapidroute-ssl.conf` virtuális gép engedélyezett
 > [!IMPORTANT]
 > A `/etc/ssl/private/rapidroute.key` fájl titkos privát kulcs. A dokumentációs csomag és a GitHub-repozitórium szándékosan nem tartalmazza. A konfiguráció csak a szerveren lévő útvonalára hivatkozik.
 
-A saját aláírású tanúsítvány titkosított kapcsolatot biztosít, de a kliens csak akkor tekinti megbízhatónak, ha a tanúsítványt vagy a későbbi belső hitelesítésszolgáltató gyökértanúsítványát megbízhatóként telepítjük. Ez az RR-CLIENT01 feladat része lesz.
+A saját aláírású tanúsítvány titkosított kapcsolatot biztosít. A nyilvános tanúsítványt az RR-CLIENT01 `Cert:\LocalMachine\Root` megbízható gyökértárolójába telepítettük; a privát kulcs nem hagyta el a webszervert. A kliensoldali HTTPS-kérés tanúsítványellenőrzés megkerülése nélkül `200` státuszkódot adott.
 
 ## 10. Ellenőrzések és eredmények
 
