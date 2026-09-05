@@ -2,7 +2,7 @@
 
 **Készítette:** Szénás Szabolcs  
 **Konfigurálás dátuma:** 2026. augusztus 30.  
-**Dokumentáció frissítve:** 2026. szeptember 1.  
+**Dokumentáció frissítve:** 2026. szeptember 5.  
 **Projekt:** RapidRoute Logistics Network
 
 ## 1. A szerver célja
@@ -52,7 +52,7 @@ A tartományban létrejött a `RapidRoute` szervezeti egység, benne:
 - `Computers`;
 - `Servers`.
 
-Az RR-FS01 számítógépobjektuma a `RapidRoute/Servers` OU-ban található. Tartománytagsága és biztonságos tartományi csatornája ellenőrzött.
+Az RR-FS01 számítógépobjektuma a `RapidRoute/Servers` OU-ban, az RR-CLIENT01 objektuma pedig a `RapidRoute/Computers` OU-ban található. Mindkét gép tartománytagsága és biztonságos tartományi csatornája ellenőrzött.
 
 ### Biztonsági csoportok
 
@@ -95,7 +95,7 @@ Az RR-FS01 telepítőmegosztásának elkészülte után létrejött és véglege
 | Nyelvi beállítás | A csomag nyelvének figyelmen kívül hagyása engedélyezve |
 | Indítási feldolgozás | Always wait for the network at computer startup and logon: Enabled |
 
-Az RR-DC01-ről az RR-FS01 név szerint elérhető, és a telepítő UNC-útvonalára futtatott `Test-Path` eredménye `True`. A GPO kliensoldali telepítési próbája az RR-CLIENT01 elkészülte után történik.
+Az RR-DC01-ről az RR-FS01 név szerint elérhető, és a telepítő UNC-útvonalára futtatott `Test-Path` eredménye `True`. Az RR-CLIENT01 kliensoldali tesztje igazolta, hogy a GPO sikeresen telepítette a 7-Zip 26.02 x64 csomagot.
 
 ## 7. Elvégzett ellenőrzések
 
@@ -153,13 +153,22 @@ Az RR-DC01 tartományvezérlő-, DNS-, Active Directory- és Group Policy-funkci
 - a napi biztonsági mentést és sikeres fájlvisszaállítást;
 - a 7-Zip telepítőcsomagot és annak terítési GPO-ját.
 
-A teljes rendszer végponttól végpontig történő lezárásához még a következő feladatok szükségesek:
+Az RR-WEB01 és az RR-CLIENT01 is elkészült. A kliensoldali végponttól végpontig tartó vizsgálat sikeresen ellenőrizte:
 
-1. **RR-WEB01:** DNS-rekord, HTTP- és HTTPS-elérés kialakítása és tesztelése;
-2. **RR-CLIENT01:** tartományi bejelentkezés, kliens-alapházirend, részlegi megosztások, nyomtatókapcsolat, automatikus 7-Zip-telepítés és weboldal-elérés ellenőrzése.
+1. a tartományi bejelentkezést és a biztonságos tartományi csatornát;
+2. a kliens-alapházirend alkalmazását;
+3. a részlegi megosztások jogosultságait;
+4. a megosztott nyomtatót;
+5. az automatikus 7-Zip-telepítést;
+6. a RapidRoute weboldal HTTP- és HTTPS-elérését;
+7. a belső HTTPS-tanúsítvány kliensoldali megbízhatóságát.
+
+Az RR-CLIENT01 végső validációja **25 sikeres, 0 sikertelen ellenőrzéssel** zárult.
 
 ## 9. Bizonyítékok
 
 Az RR-DC01 eredeti telepítési és ellenőrzési képeinek tartalomjegyzéke a [`KEPEK.md`](KEPEK.md) fájlban található.
 
 Az RR-FS01 tartományba léptetését, az RR-DC01-ről végzett MSI-elérési tesztet, valamint a 7-Zip Group Policy teljes beállítását az [`RR-FS01 képkatalógusa`](../RR-FS01/KEPEK.md) dokumentálja. Az RR-FS01 részletes műszaki leírása az [`RR-FS01_dokumentacio.md`](../RR-FS01/RR-FS01_dokumentacio.md) fájlban található.
+
+Az RR-CLIENT01 telepítését és végponttól végpontig tartó tesztjeit az [`RR-CLIENT01 képkatalógusa`](../RR-CLIENT01/KEPEK.md), a részletes klienskonfigurációt pedig az [`RR-CLIENT01_dokumentacio.md`](../RR-CLIENT01/RR-CLIENT01_dokumentacio.md) tartalmazza.
