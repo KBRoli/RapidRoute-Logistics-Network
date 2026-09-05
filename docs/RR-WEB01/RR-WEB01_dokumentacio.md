@@ -2,7 +2,7 @@
 
 **Készítette:** Szénás Szabolcs  
 **Konfigurálás dátuma:** 2026. szeptember 1.  
-**Dokumentáció frissítve:** 2026. szeptember 2.  
+**Dokumentáció frissítve:** 2026. szeptember 5.  
 **Projekt:** RapidRoute Logistics Network
 
 ## 1. A szerver célja
@@ -173,10 +173,12 @@ Az RR-WEB01 szerveroldali konfigurációja elkészült:
 - saját aláírású TLS-tanúsítvány;
 - DNS-, hálózati, szolgáltatás-, HTTP-, HTTPS- és TLS-ellenőrzések.
 
-A következő nagy feladat az **RR-CLIENT01** elkészítése. Ott ellenőrizhető majd a tartományi bejelentkezés, a GPO-k és a 7-Zip telepítése, az RR-FS01 megosztásai, a nyomtató, valamint a RapidRoute weboldal kliensoldali HTTPS-megbízhatósága.
+Az **RR-CLIENT01** elkészült. A kliensoldali vizsgálat igazolta a tartományi bejelentkezést, a GPO-k és a 7-Zip telepítését, az RR-FS01 megosztásait és nyomtatóját, valamint a RapidRoute weboldal megbízható HTTPS-elérését. A teljes kliensvalidáció eredménye: **25 sikeres, 0 sikertelen ellenőrzés**.
 
 ## 12. Bizonyítékok
 
 A telepítés és az ellenőrzések válogatott képeinek tartalomjegyzéke a [`KEPEK.md`](KEPEK.md) fájlban található.
 
 Az RR-DC01 DNS-bejegyzéseihez és integrációs ellenőrzéseihez kapcsolódó összefoglaló az [`RR-DC01 dokumentációjában`](../RR-DC01/RR-DC01_dokumentacio.md) szerepel.
+
+A kliensoldali HTTP/HTTPS- és tanúsítvány-megbízhatósági ellenőrzéseket az [`RR-CLIENT01 dokumentációja`](../RR-CLIENT01/RR-CLIENT01_dokumentacio.md) és [`képkatalógusa`](../RR-CLIENT01/KEPEK.md) tartalmazza.
