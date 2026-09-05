@@ -2,6 +2,7 @@
 
 **Készítette:** Szénás Szabolcs  
 **Konfigurálás dátuma:** 2026. augusztus 31. – szeptember 1.  
+**Dokumentáció frissítve:** 2026. szeptember 5.  
 **Projekt:** RapidRoute Logistics Network
 
 ## 1. A szerver célja
@@ -167,16 +168,20 @@ A szerveroldali ellenőrzések eredménye:
 - a mentési verziók lekérdezhetők, a fájlvisszaállítás sikeres volt;
 - a 7-Zip telepítési GPO létrejött és a Computers OU-hoz kapcsolódik.
 
-## 11. Jelenlegi készültség és hátralévő klienspróbák
+## 11. Végponttól végpontig tartó kliensellenőrzés
 
-Az **RR-FS01 szerveroldali konfigurációja elkészült**. A teljes rendszer végponttól végpontig történő lezárásához az RR-CLIENT01 elkészülte után még az alábbi kliensoldali próbák szükségesek:
+Az **RR-FS01 szerveroldali konfigurációja és kliensoldali ellenőrzése elkészült**. A teszteket az RR-CLIENT01 gépen, a `RAPIDROUTE\teszt.budapest` tartományi felhasználóval végeztük el.
 
-1. a három tesztfelhasználó csak a saját részlegi megosztását érje el;
-2. fájl létrehozása és módosítása a megfelelő megosztáson;
-3. illetéktelen részlegi megosztás hozzáférésének megtagadása;
-4. az `RR-Office-Printer` csatlakoztatása és tesztoldal küldése;
-5. a 7-Zip automatikus telepítésének ellenőrzése újraindítás és `gpupdate /force` után;
-6. a GPO eredményének dokumentálása `gpresult` vagy Group Policy Results segítségével.
+Az ellenőrzések eredménye:
+
+1. a felhasználó hozzáfért a `\\RR-FS01\Budapest` megosztáshoz, és sikeresen létrehozta az `RR-CLIENT01_teszt.txt` fájlt;
+2. a `\\RR-FS01\Debrecen_Logisztika` megosztáshoz való hozzáférés megfelelően megtagadásra került;
+3. a `\\RR-FS01\Debrecen_Depo` megosztáshoz való hozzáférés megfelelően megtagadásra került;
+4. a `\\RR-FS01\RR-Office-Printer` megosztott nyomtató sikeresen csatlakozott, állapota `Normal`;
+5. a `GPO_RapidRoute_7Zip_Deployment` házirend alkalmazódott, és a 7-Zip 26.02 x64 csomag automatikusan települt;
+6. a `GPO_RapidRoute_Client_Baseline` házirend jogi bejelentkezési üzenete és 900 másodperces inaktivitási korlátja alkalmazódott.
+
+Az RR-CLIENT01 teljes, végponttól végpontig tartó validációja **25 sikeres és 0 sikertelen ellenőrzéssel** zárult. A részletes eredmények az [`RR-CLIENT01 dokumentációjában`](../RR-CLIENT01/RR-CLIENT01_dokumentacio.md), a bizonyító képek pedig az [`RR-CLIENT01 képkatalógusában`](../RR-CLIENT01/KEPEK.md) találhatók.
 
 ## 12. Bizonyítékok
 
